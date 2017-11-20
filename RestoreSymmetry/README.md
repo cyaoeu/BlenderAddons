@@ -22,15 +22,15 @@ If you want to add a hotkey you can add it in 3dview - Object mode and the comma
 mesh.restoresymmetry
 ```
 
-##Authors
+## Authors
 
 * **Philip Lafleur** - *Original creator of the Remirror addon*
 * **Henrik Berglund** - *Edits to the addon*
 
-##License
+## License
 
 GPL
 
-##Acknowledgements
+## Acknowledgements
 
 Thanks to the original author Philip Lafleur for the original Remirror addon.
