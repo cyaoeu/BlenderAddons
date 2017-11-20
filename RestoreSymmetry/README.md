@@ -17,16 +17,17 @@ Please read [https://wiki.blender.org/index.php/Extensions:2.6/Py/Scripts/Mesh/R
 
 It's pretty simple though, just select a mesh in object mode and do Object - Mirror - Restore Symmetry or just Restore Symmetry from the spacebar search menu. It will fail if your mesh doesn't have a loop through the middle of the mesh.
 
-If you want to add a hotkey you can add it in 3dview - Object mode and the command is: ```
+If you want to add a hotkey you can add it in 3dview - Object mode and the command is: 
+```
 mesh.restoresymmetry
 ```
 
-## Authors
+##Authors
 
 * **Philip Lafleur** - *Original creator of the Remirror addon*
 * **Henrik Berglund** - *Edits to the addon*
 
-## License
+##License
 
 GPL
 
