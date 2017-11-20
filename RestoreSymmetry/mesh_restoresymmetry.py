@@ -322,7 +322,7 @@ def restore_symmetry(mesh, shapekey, axis, source):
 
 
 def menufunc(self, context):
-    self.layout.operator(restore_symmetry.bl_idname)
+    self.layout.operator(RestoreSymmetry.bl_idname)
 
 
 def register():
