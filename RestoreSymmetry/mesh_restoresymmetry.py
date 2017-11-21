@@ -29,7 +29,7 @@
 bl_info = {
     "name": "Restore Symmetry (originally Remirror)",
     "author": "Philip Lafleur (original author), Henrik Berglund (edits)",
-    "version": (1, 0),
+    "version": (1, 0, 1),
     "blender": (2, 7, 9),
     "location": "View3D > Object > Mirror > Restore Symmetry",
     "description": "Non-destructively update symmetry of a mirrored mesh (and shapekeys)",
@@ -72,20 +72,28 @@ class RestoreSymmetry(bpy.types.Operator):
     @classmethod
     def poll (cls, context):
         obj = context.active_object
-        return obj and obj.type == 'MESH' and context.mode == 'OBJECT'
+        return obj and obj.type == 'MESH' and context.mode == 'OBJECT' or 'EDIT_MESH' or 'SCULPT'
 
     def execute(self, context):
         mesh = bpy.context.active_object.data
+        mode = bpy.context.mode
 
         if bpy.context.active_object.data.shape_keys is None:
             shapekey = None
         else:
             shapekey = bpy.context.active_object.active_shape_key.name #if shapekey was found add to shapekey for later
 
+        bpy.ops.object.set_object_mode(mode='OBJECT') #go to object mode for bmesh operation
+
         try:
             restore_symmetry(mesh, shapekey, {'X': 0, 'Y': 1, 'Z': 2}[self.axis], self.source)
         except ValueError as e:
             self.report ({'ERROR'}, str(e))
+
+        if mode == 'EDIT_MESH':
+            bpy.ops.object.set_object_mode(mode='EDIT') #return to edit mode
+        if mode == 'SCULPT':
+            bpy.ops.object.set_object_mode(mode='SCULPT')  # return to sculpt mode
 
         return {'FINISHED'}
 
