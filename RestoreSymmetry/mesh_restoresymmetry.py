@@ -29,7 +29,7 @@
 bl_info = {
     "name": "Restore Symmetry (originally Remirror)",
     "author": "Philip Lafleur (original author), Henrik Berglund (edits), Sergey Meshkov (edits)",
-    "version": (1, 0, 2),
+    "version": (1, 0, 3),
     "blender": (2, 7, 9),
     "location": "View3D > Object > Mirror > Restore Symmetry",
     "description": "Non-destructively update symmetry of a mirrored mesh (and shapekeys)",
