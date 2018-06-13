@@ -28,7 +28,7 @@
 
 bl_info = {
     "name": "Restore Symmetry (originally Remirror)",
-    "author": "Philip Lafleur (original author), Henrik Berglund (edits)",
+    "author": "Philip Lafleur (original author), Henrik Berglund (edits), Sergey Meshkov (edits)",
     "version": (1, 0, 2),
     "blender": (2, 7, 9),
     "location": "View3D > Object > Mirror > Restore Symmetry",
@@ -65,9 +65,13 @@ class RestoreSymmetry(bpy.types.Operator):
                           ('Z', "Z", "Z Axis")))
     source = bpy.props.EnumProperty(
                  name = "Source",
-                 description = "Half of mesh to be mirrored on the other half",
+                 description = "Which half of the mesh to use as mirror source",
                  items = (('POSITIVE', "Positive side", "Positive side"),
                           ('NEGATIVE', "Negative side", "Negative side")))
+    targetmix = bpy.props.FloatProperty(
+                 name = "Target Mix Amount",
+                 description = "How much target coordinates should contribute",
+                 default = 0.0, min = 0.0, max = 1.0)
 
     @classmethod
     def poll (cls, context):
@@ -86,7 +90,7 @@ class RestoreSymmetry(bpy.types.Operator):
         bpy.ops.object.mode_set(mode='OBJECT') #go to object mode for bmesh operation
 
         try:
-            restore_symmetry(mesh, shapekey, {'X': 0, 'Y': 1, 'Z': 2}[self.axis], self.source)
+            restore_symmetry(mesh, shapekey, {'X': 0, 'Y': 1, 'Z': 2}[self.axis], self.source, self.targetmix)
         except ValueError as e:
             self.report ({'ERROR'}, str(e))
 
@@ -200,22 +204,34 @@ def visit_mirror_verts(v_start, e_start, visitor, shapelayer, shapekey):
         vl.tag = True
 
 
-def update_verts(v_start, e_start, axis, source, shapelayer, shapekey):
+def update_verts(v_start, e_start, axis, source, shapelayer, shapekey, targetmix):
     def update_positive(v_right, v_left):
         if(shapekey=="Basis" or shapekey == None): #no shapekeys or basis shapekey selected - use original code
-            v_left.co = v_right.co
-            v_left.co[axis] = -v_right.co[axis]
-        else: #shapekeys found - use edited code
-            v_left[shapelayer] = v_right[shapelayer]
-            v_left[shapelayer][axis] = -v_right[shapelayer][axis]
-
-    def update_negative(v_right, v_left):
-        if(shapekey=="Basis" or shapekey == None): #no shapekeys or basis shapekey selected - use original code
+        # mix source and target (default mix amount 0 means use 100% source); mix at target, then update source 
+            v_left.co = targetmix*v_left.co + (1.0-targetmix)*v_right.co
+            v_left.co[axis] = v_left.co[axis] - 2.0*(1.0-targetmix)*v_right.co[axis]
             v_right.co = v_left.co
             v_right.co[axis] = -v_left.co[axis]
         else: #shapekeys found - use edited code
+        # mix source and target (default mix amount 0 means use 100% source); mix at target, then update source
+            v_left[shapelayer] = targetmix*v_left[shapelayer] + (1.0-targetmix)*v_right[shapelayer]
+            v_left[shapelayer][axis] = v_left[shapelayer][axis] - 2.0*(1.0-targetmix)*v_right[shapelayer][axis]
             v_right[shapelayer] = v_left[shapelayer]
             v_right[shapelayer][axis] = -v_left[shapelayer][axis]
+
+    def update_negative(v_right, v_left):
+        if(shapekey=="Basis" or shapekey == None): #no shapekeys or basis shapekey selected - use original code
+        # mix source and target (default mix amount 0 means use 100% source); mix at target, then update source 
+            v_right.co = targetmix*v_right.co + (1.0-targetmix)*v_left.co
+            v_right.co[axis] = v_right.co[axis] - 2.0*(1.0-targetmix)*v_left.co[axis]            
+            v_left.co = v_right.co
+            v_left.co[axis] = -v_right.co[axis]
+        else: #shapekeys found - use edited code
+        # mix source and target (default mix amount 0 means use 100% source); mix at target, then update source 
+            v_right[shapelayer] = targetmix*v_right[shapelayer] + (1.0-targetmix)*v_left[shapelayer]
+            v_right[shapelayer][axis] = v_right[shapelayer][axis] - 2.0*(1.0-targetmix)*v_left[shapelayer][axis]
+            v_left[shapelayer] = v_right[shapelayer]
+            v_left[shapelayer][axis] = -v_right[shapelayer][axis]
 
     visit_mirror_verts(
         v_start, e_start,
@@ -298,7 +314,7 @@ def starting_vertex(edge, axis):
     return loops[-1].vert
 
 
-def restore_symmetry(mesh, shapekey, axis, source):
+def restore_symmetry(mesh, shapekey, axis, source, targetmix):
     bm = bmesh.new ()
     bm.from_mesh(mesh)
 
@@ -318,7 +334,7 @@ def restore_symmetry(mesh, shapekey, axis, source):
 
     for e in bm.edges:
         if e.tag:
-            update_verts(starting_vertex(e, axis), e, axis, source, shapelayer, shapekey)
+            update_verts(starting_vertex(e, axis), e, axis, source, shapelayer, shapekey, targetmix)
 
     for v in bm.verts:
         v.tag = False
