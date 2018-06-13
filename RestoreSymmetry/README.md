@@ -26,9 +26,10 @@ mesh.restoresymmetry
 
 * **Philip Lafleur** - *Original creator of the Remirror addon*
 * **Henrik Berglund** - *Edits to the addon*
-**Sergey Meshkov**
+* **Sergey Meshkov**
 
- - *Edits to the addon*## License
+ - *Edits to the addon*
+## License
 
 GPL
 
