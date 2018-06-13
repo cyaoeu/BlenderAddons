@@ -1,8 +1,8 @@
 # Restore Symmetry
 
-Restory Symmetry is a fork of Remirror, an addon that was developed by Philip Lafleur and posted on the Blender wiki and tracker. (https://wiki.blender.org/index.php/Extensions:2.6/Py/Scripts/Mesh/Remirror)
+Restore Symmetry is a fork of Remirror, an addon that was developed by Philip Lafleur and posted on the Blender wiki and tracker. (https://wiki.blender.org/index.php/Extensions:2.6/Py/Scripts/Mesh/Remirror)
 
-Its purpose is to reestablish symmetry in a mirrored mesh after sculpting (which does not keep perfect symmetry in all cases) or other mesh editing that disrupts symmetry.
+Its purpose is to reestablish symmetry in a mirrored mesh after sculpting (which does not keep perfect symmetry in all cases) or other mesh editing that disrupts symmetry. 
 
 I edited the addon to add support for restoring symmetry of shape keys. 
 
@@ -26,8 +26,9 @@ mesh.restoresymmetry
 
 * **Philip Lafleur** - *Original creator of the Remirror addon*
 * **Henrik Berglund** - *Edits to the addon*
+**Sergey Meshkov**
 
-## License
+ - *Edits to the addon*## License
 
 GPL
 
